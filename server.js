@@ -1,21 +1,25 @@
 let express = require( "express" );
+let app = express();
 let morgan = require( "morgan" );
 let mongoose = require( "mongoose" );
 let bodyParser = require( "body-parser" );
+let jsonParser = bodyParser.json();
 // const { DATABASE_URL, PORT } = require( './config' );
 
-let app = express();
-let jsonParser = bodyParser.json();
 mongoose.Promise = global.Promise;
 
+// app.set('view engine', 'ejs')
 app.use(express.static("public"));
-
-app.use(morgan( "dev" ));
+// app.use(morgan( "dev" ));
 app.use(bodyParser.json());
 
 app.get('/', (req,res) => {
   console.log("get home");
-  res.sendFile('/public/server-list/index.html', {root: __dirname});
+  res.sendFile('/public/index.html', {root: __dirname});
+});
+app.get('/server-list', (req,res) => {
+  console.log("get server list");
+  res.sendFile('/public/index.html', {root: __dirname});
 });
 
 let server;
