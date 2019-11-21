@@ -1,8 +1,9 @@
 <html lang="en">
   <head>
     <meta charset="UFT-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="./../index.css">
+    <link rel="stylesheet" href="./index.css">
     <title> BTC Dispatcher - Game</title>
   </head>
   <body>
@@ -22,6 +23,41 @@
         </ul>
       </div>
     </nav>
+    <div class="content-center">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title" id="lobby-name">pene</h3>
+          <h1  class="card-text" id="game-start-text"></h1>
+        </div>
+      </div>
+
+      <div id="role-container" class="card" style="display: none;">
+        <img id="role-img" class="card-img-top" src="../../images/1.png"/>
+        <div class="card-body">
+          <h1 id="role-name" class="card-title"></h1>
+          <h3 id="role-desc" class="card-text"></h3>
+        </div>
+        <button id="role-inst-btn" class="btn btn-primary" type="button" data-toggle="collapse" data-target="#role-inst-container" aria-expanded="false" aria-controls="role-inst-container">
+          Role Details
+        </button>
+        <div id="role-inst-container" class="collapse">
+          <ul id="role-inst" class="list-group list-group-flush">
+          </ul>
+        </div>
+      </div>
+
+      <div id="role-list-card" class="card">
+        <button id="role-list-btn" class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#role-list-container" aria-expanded="false" aria-controls="role-list-container">
+          All Roles
+        </button>
+        <div id="role-list-container" class="collapse">
+          <ul id="role-list" class="list-group list-group-flush">
+            <li>Pene</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

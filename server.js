@@ -38,7 +38,6 @@ app.get('/about', (req,res) => {
   console.log("get about");
   res.render('about/index');
 });
-// app.get('/game/?lobby=:lobby_id&player=:player_id', (req, res) => {
 app.get('/game', (req, res) => {
   console.log("getting lobby with id:"+req.params.id);
   res.render('game/index', {
@@ -55,6 +54,34 @@ app.get('/lobby', (req, res) => {
   })
   .catch(error => {
     databaseError(res, error);
+  });
+});
+
+app.post('/gameState', (req, res) => {
+  let player_id = req.body.player_id;
+  let lobby_id = req.body.lobby_id;
+  LobbyList.getOne(lobby_id)
+  .then(lobby => {
+    if(lobby != null){
+      let gameStarted = lobby.started;
+      return res.status(200).json({
+        code: 200,
+        message: "Game state",
+        role: "unassigned",
+        started: gameStarted,
+        extra: {},
+        lobbyName: lobby.name
+      });
+    }
+    else{
+      return res.status(404).json({
+        code: 404,
+        message: "Could'nt find game state"
+      })
+    }
+  })
+  .catch(error => {
+    databaseError(error);
   });
 });
 
