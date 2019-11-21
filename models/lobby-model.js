@@ -70,6 +70,19 @@ let LobbyList = {
       .catch(error => {
         return Error(error);
       });
+  },
+
+  //Update player count
+  putPlayerCount : function(lobby_id, increment){
+    return Lobby.update(
+      {"_id": mongoose.Types.ObjectId(lobby_id)},
+      {$inc: {playerCount: increment}}
+    ).then(result => {
+      return result;
+    })
+    .catch(error => {
+      return Error(error);
+    })
   }
 
 }

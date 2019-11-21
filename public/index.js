@@ -130,6 +130,7 @@ btnJoin.on("click", event => {
     data: JSON.stringify(player),
     success: (result) => {
       console.log(result.message);
+      get_list();
     },
     error: (error) => {
       handleError(error);
