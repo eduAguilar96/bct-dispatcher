@@ -1,9 +1,26 @@
-var updated_lobbies = ["lobby1", "lobby2", "lobby3", "lobby4", "lobby5", "lobby6"];
-let createBtn = $("#btn-create");
 let lobbyHostName = $("#lobby-host");
 let lobbyName = $("#lobby-name");
 let lobbyPassword = $("#lobby-password");
 let lobbyMaxPlayerCount = $("#lobby-max");
+let joinLobbyUsername = $("#join-lobby-username");
+let joinLobbyPassword = $("#join-lobby-password");
+let btnCreate = $("#btn-create");
+let btnJoin = $("#btn-join-lobby-modal");
+let listContainer = $("#lobby-list-container");
+
+var global_list = [{
+  name: "test"
+}];
+var currentLobbyName = "";
+
+function handleError(error){
+  console.log(error);
+  if(error.hasOwnProperty('responseJSON')){
+    window.alert(error.responseJSON.code+" - "+error.responseJSON.message);
+  }else{
+    window.alert("500 - Error in DB");
+  }
+}
 
 function lobbyLi(lobby){
   let li = `
@@ -24,16 +41,15 @@ function lobbyLi(lobby){
       </svg>
       `+lobby.playerCount+`/`+lobby.maxPlayerCount+`
     </span>
-    `+lobby.name+`
+    <span id="name-container">`+lobby.name+`</span>
   </li>
   `
   return li;
 }
 
-function update_list(updated_lobbies) {
-
+function update_list() {
   $('#lobby-list-container ul li').remove();
-  $.each(updated_lobbies, (index, lobby) => {
+  $.each(global_list, (index, lobby) => {
     $('#lobby-list-container ul').append(lobbyLi(lobby));
   });
 }
@@ -45,16 +61,16 @@ function get_list() {
     dataType: "JSON",
     success: (result) => {
       console.log(result);
-      update_list(result);
+      global_list = result;
+      update_list();
     },
     error: (error) => {
-      console.log(error);
-      window.alert("Error while getting lobby list");
+      handleError(error);
     }
   });
 }
 
-createBtn.on("click", event => {
+btnCreate.on("click", event => {
   event.preventDefault();
 
   let lobby = {
@@ -71,11 +87,10 @@ createBtn.on("click", event => {
     contentType: "application/json",
     data: JSON.stringify(lobby),
     success: (result) => {
-      update_list(updated_lobbies);
+      get_list();
     },
     error: (error) => {
-      console.log(error);
-      window.alert("400 - Bad Request");
+      handleError(error);
     }
   });
 
@@ -83,6 +98,43 @@ createBtn.on("click", event => {
   lobbyHostName.val('')
   lobbyName.val('')
   lobbyPassword.val('')
+});
+
+listContainer.on("click", "ul li #btn-join", event => {
+  event.preventDefault();
+  let lobbyName = $(event.target).parent().parent().children("#name-container").text();
+  currentLobbyName = lobbyName;
+  $('#join-lobby-modal-name').text(lobbyName);
+  $('#join-lobby-modal').modal('toggle');
+});
+
+btnJoin.on("click", event => {
+  event.preventDefault();
+  console.log("\'"+currentLobbyName+"\'");
+  let username = joinLobbyUsername.val();
+  let password = joinLobbyPassword.val();
+  let lobby_id = global_list.find(e => e.name == currentLobbyName)._id;
+  console.log(lobby_id);
+  let player = {
+    username: username,
+    password: password,
+    lobby_name: currentLobbyName,
+    lobby_id: lobby_id
+  }
+
+  $.ajax({
+    url: "/player",
+    method: "POST",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: JSON.stringify(player),
+    success: (result) => {
+      console.log(result.message);
+    },
+    error: (error) => {
+      handleError(error);
+    }
+  });
 });
 
 get_list();

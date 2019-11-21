@@ -31,12 +31,12 @@
       </button>
     </div>
 
-    <!-- Modal -->
+    <!-- New Lobby Modal -->
     <div class="modal fade" id="new-lobby-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New Game Lobby</h5>
+            <h5 class="modal-title" id="new-lobby-label">New Game Lobby</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -81,7 +81,38 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button id="btn-create" type="button" class="btn btn-primary">Create</button>
+            <button id="btn-create" class="btn btn-primary">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Join Lobby Modal -->
+    <div class="modal fade" id="join-lobby-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="join-lobby-modal-label">Join Lobby "<span id="join-lobby-modal-name"></span>"</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="join-username">Username</label>
+                <input type="email" class="form-control" id="join-lobby-username" aria-describedby="username-help" placeholder="Enter username">
+                <small id="username-help" class="form-text text-muted">Name you'll use to log back into the lobby</small>
+              </div>
+              <div class="form-group">
+                <label for="lobby-password">Lobby Password</label>
+                <input type="password" class="form-control" id="join-lobby-password" placeholder="Password">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="btn-join-lobby-modal" class="btn btn-primary">Join</button>
           </div>
         </div>
       </div>
@@ -109,7 +140,7 @@
             </svg>
             0/8
           </span>
-          Test name
+          <span id="name-container">Test name</span>
         </li>
       </ul>
     </div>

@@ -15,7 +15,7 @@ var LobbySchema = new mongoose.Schema({
   },
   playerCount: {
     type: Number,
-    default: 0
+    default: 1
   },
   maxPlayerCount: {
     type: Number,
@@ -50,15 +50,24 @@ let LobbyList = {
       });
   },
 
+  //Get one Lobby
+  getOne : function(lobby_id){
+    return Lobby.findOne({"_id": mongoose.Types.ObjectId(lobby_id)})
+      .then(lobby => {
+        return lobby;
+      })
+      .catch(error => {
+        throw Error(error);
+      });
+  },
+
   //Create new lobby
   post: function(newLobby){
     return Lobby.create(newLobby)
       .then(result => {
-        console.log("model - result");
         return result;
       })
       .catch(error => {
-        console.log("model - error");
         return Error(error);
       });
   }
