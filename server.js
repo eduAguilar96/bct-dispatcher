@@ -1,18 +1,20 @@
 let express = require( "express" );
-let app = express();
 let morgan = require( "morgan" );
 let mongoose = require( "mongoose" );
 let bodyParser = require( "body-parser" );
+let app = express();
 let jsonParser = bodyParser.json();
-// const { DATABASE_URL, PORT } = require( './config' );
+let { LobbyList } = require( "./models/lobby-model" );
+const { DATABASE_URL, PORT } = require( './config' );
 
 mongoose.Promise = global.Promise;
 
 // app.set('view engine', 'ejs')
 app.use(express.static("public"));
-// app.use(morgan( "dev" ));
+app.use(morgan( "dev" ));
 app.use(bodyParser.json());
 
+//gets
 app.get('/', (req,res) => {
   console.log("get home");
   res.sendFile('/public/index.html', {root: __dirname});
@@ -20,6 +22,41 @@ app.get('/', (req,res) => {
 app.get('/server-list', (req,res) => {
   console.log("get server list");
   res.sendFile('/public/index.html', {root: __dirname});
+});
+
+//post
+app.post("/lobby", (req, res) => {
+  console.log("creating lobby");
+  let hostName = req.body.hostName;
+  let name = req.body.name;
+  let password = req.body.password;
+  let maxPlayerCount = req.body.maxPlayerCount;
+  let newLobby = {
+    hostName: hostName,
+    name: name,
+    password: password,
+    maxPlayerCount: maxPlayerCount
+  }
+  console.log(newLobby);
+  LobbyList.post(newLobby).then(lobby => {
+    if(Object.entries(lobby).length === 0){
+      console.log("lobby not created")
+      return res.status(400).json({
+        code: 400,
+        message: "La regaste con algo bruh"
+      });
+    }else{
+      console.log("created lobby");
+      return res.status(200).json(lobby);
+    }
+  })
+  .catch(error => {
+    res.statusMessage = "Algo se cago con la DB";
+    return res.status(500).json({
+      code: 500,
+      message: "Algo se cago con la DB"
+    });
+  });
 });
 
 let server;
@@ -61,7 +98,7 @@ function closeServer(){
 		});
 }
 
-runServer( "8080", "mongodb://localhost/lobbyServer" )
+runServer( PORT, DATABASE_URL )
 	.catch( err => {
 		console.log( err );
 	});

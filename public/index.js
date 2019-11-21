@@ -1,6 +1,9 @@
-console.log("Hello World");
-
 var updated_lobbies = ["lobby1", "lobby2", "lobby3", "lobby4", "lobby5", "lobby6"];
+let createBtn = $("#btn-create");
+let lobbyHostName = $("#lobby-host");
+let lobbyName = $("#lobby-name");
+let lobbyPassword = $("#lobby-password");
+let lobbyMaxPlayerCount = $("#lobby-max");
 
 function lobbyLi(lobby){
   let li = `
@@ -35,6 +38,47 @@ function update_list(updated_lobbies) {
     $('#lobby-list-container ul').append(lobbyLi(lobby));
   });
 }
+
+function get_list() {
+  console.log("getting lobbies");
+  $.ajax({
+    url: "/lobby"
+  });
+}
+
+createBtn.on("click", event => {
+  event.preventDefault();
+
+  let lobby = {
+    hostName: lobbyHostName.val(),
+    name: lobbyName.val(),
+    password: lobbyPassword.val(),
+    maxPlayerCount: lobbyMaxPlayerCount.val()
+  }
+
+  console.log(lobby);
+
+  $.ajax({
+    url: "/lobby",
+    method: "POST",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: JSON.stringify(lobby),
+    success: (result) => {
+      console.log(result);
+      update_list(updated_lobbies);
+    },
+    error: (error) => {
+      console.log(error);
+      window.alert("400 - Bad Request");
+    }
+  });
+
+  $('#new-lobby-modal').modal('toggle')
+  lobbyHostName.val('')
+  lobbyName.val('')
+  lobbyPassword.val('')
+});
 
 
 update_list(updated_lobbies);
