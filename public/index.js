@@ -22,27 +22,35 @@ function lobbyLi(lobby){
       <svg id="i-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
         <path d="M22 11 C22 16 19 20 16 20 13 20 10 16 10 11 10 6 12 3 16 3 20 3 22 6 22 11 Z M4 30 L28 30 C28 21 22 20 16 20 10 20 4 21 4 30 Z" />
       </svg>
-      0/8
+      `+lobby.playerCount+`/`+lobby.maxPlayerCount+`
     </span>
-    `+lobby+`
+    `+lobby.name+`
   </li>
   `
   return li;
 }
 
 function update_list(updated_lobbies) {
-  console.log("initiating update");
-  $('#lobby-list-container ul li').remove();
 
+  $('#lobby-list-container ul li').remove();
   $.each(updated_lobbies, (index, lobby) => {
     $('#lobby-list-container ul').append(lobbyLi(lobby));
   });
 }
 
 function get_list() {
-  console.log("getting lobbies");
   $.ajax({
-    url: "/lobby"
+    url: "/lobby",
+    method: "GET",
+    dataType: "JSON",
+    success: (result) => {
+      console.log(result);
+      update_list(result);
+    },
+    error: (error) => {
+      console.log(error);
+      window.alert("Error while getting lobby list");
+    }
   });
 }
 
@@ -56,8 +64,6 @@ createBtn.on("click", event => {
     maxPlayerCount: lobbyMaxPlayerCount.val()
   }
 
-  console.log(lobby);
-
   $.ajax({
     url: "/lobby",
     method: "POST",
@@ -65,7 +71,6 @@ createBtn.on("click", event => {
     contentType: "application/json",
     data: JSON.stringify(lobby),
     success: (result) => {
-      console.log(result);
       update_list(updated_lobbies);
     },
     error: (error) => {
@@ -80,5 +85,4 @@ createBtn.on("click", event => {
   lobbyPassword.val('')
 });
 
-
-update_list(updated_lobbies);
+get_list();

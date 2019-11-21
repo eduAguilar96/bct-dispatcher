@@ -14,14 +14,29 @@ app.use(express.static("public"));
 app.use(morgan( "dev" ));
 app.use(bodyParser.json());
 
-//gets
+//Routes
 app.get('/', (req,res) => {
   console.log("get home");
   res.sendFile('/public/index.html', {root: __dirname});
 });
-app.get('/server-list', (req,res) => {
-  console.log("get server list");
-  res.sendFile('/public/index.html', {root: __dirname});
+
+//Gets
+app.get('/lobby/:id', (req, res) => {
+  console.log("getting lobby with id:"+req.params.id);
+});
+
+app.get('/lobby', (req, res) => {
+  console.log("getting all lobbies");
+  LobbyList.getAll().then(lobbies => {
+    return res.status(200).json(lobbies);
+  })
+  .catch(error => {
+    res.statusMessage = "Algo se cago con la DB";
+    return res.status(500).json({
+      code: 500,
+      message: "Algo se cago con la DB"
+    });
+  });
 });
 
 //post
@@ -40,13 +55,11 @@ app.post("/lobby", (req, res) => {
   console.log(newLobby);
   LobbyList.post(newLobby).then(lobby => {
     if(Object.entries(lobby).length === 0){
-      console.log("lobby not created")
       return res.status(400).json({
         code: 400,
         message: "La regaste con algo bruh"
       });
     }else{
-      console.log("created lobby");
       return res.status(200).json(lobby);
     }
   })
