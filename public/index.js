@@ -70,6 +70,14 @@ function get_list() {
   });
 }
 
+function gotoGame(result){
+  console.log("result");
+  console.log(result);
+  let lobby_id = result.lobby_id;
+  let player_id = result.player_id;
+  window.location.assign("/game/?lobby="+lobby_id+"&player="+player_id);
+}
+
 btnCreate.on("click", event => {
   event.preventDefault();
 
@@ -110,11 +118,9 @@ listContainer.on("click", "ul li #btn-join", event => {
 
 btnJoin.on("click", event => {
   event.preventDefault();
-  console.log("\'"+currentLobbyName+"\'");
   let username = joinLobbyUsername.val();
   let password = joinLobbyPassword.val();
   let lobby_id = global_list.find(e => e.name == currentLobbyName)._id;
-  console.log(lobby_id);
   let player = {
     username: username,
     password: password,
@@ -129,8 +135,8 @@ btnJoin.on("click", event => {
     contentType: "application/json",
     data: JSON.stringify(player),
     success: (result) => {
-      console.log(result.message);
       get_list();
+      gotoGame(result);
     },
     error: (error) => {
       handleError(error);

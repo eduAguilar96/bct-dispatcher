@@ -1,4 +1,5 @@
 let express = require( "express" );
+var path = require('path');
 let morgan = require( "morgan" );
 let mongoose = require( "mongoose" );
 let bodyParser = require( "body-parser" );
@@ -7,6 +8,7 @@ let jsonParser = bodyParser.json();
 let { LobbyList } = require( "./models/lobby-model" );
 let { PlayerList } = require( "./models/player-model" );
 const { DATABASE_URL, PORT } = require( './config' );
+const ejs = require('ejs');
 
 mongoose.Promise = global.Promise;
 
@@ -14,6 +16,9 @@ mongoose.Promise = global.Promise;
 app.use(express.static("public"));
 app.use(morgan( "dev" ));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.set ("view engine", "ejs");
+app.set('views', path.join(__dirname, '/public'));
 
 //helpers
 function databaseError(res, error){
@@ -27,14 +32,22 @@ function databaseError(res, error){
 //Routes
 app.get('/', (req,res) => {
   console.log("get home");
-  res.sendFile('/public/index.html', {root: __dirname});
+  res.render('index');
+});
+app.get('/about', (req,res) => {
+  console.log("get about");
+  res.render('about/index');
+});
+// app.get('/game/?lobby=:lobby_id&player=:player_id', (req, res) => {
+app.get('/game', (req, res) => {
+  console.log("getting lobby with id:"+req.params.id);
+  res.render('game/index', {
+    lobby_id: req.params.lobby_id,
+    player_id: req.params.player_id
+  });
 });
 
 //Gets
-app.get('/lobby/:id', (req, res) => {
-  console.log("getting lobby with id:"+req.params.id);
-});
-
 app.get('/lobby', (req, res) => {
   console.log("getting all lobbies");
   LobbyList.getAll().then(lobbies => {
