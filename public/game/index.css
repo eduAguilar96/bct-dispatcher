@@ -59,3 +59,12 @@ body{
   width: 72px;
   height: 31px;
 }
+
+.state-container{
+  float: right;
+  color: green;
+}
+
+.icon{
+  margin-right: 10px;
+}

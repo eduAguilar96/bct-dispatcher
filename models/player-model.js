@@ -28,6 +28,13 @@ var PlayerSchema = new mongoose.Schema({
     max: 19,
     required: true,
     default: 0
+  },
+  state: {
+    type: Number,
+    min: 0,
+    max: 2,
+    required: true,
+    default: 0
   }
 });
 

@@ -1,12 +1,13 @@
 let params = [];
-var preGameHostRoleSelect = new Array(23);
-for(var i = 0; i < 23; i++){preGameHostRoleSelect[i] = false;}
-var preGameSelectedRolesCount = 0;
 let lobbyName = $("#lobby-name");
 let gameStartText = $("#game-start-text");
+let playerRefCard = $("#player-ref-card");
 let preGameHostCard = $("#pre-game-host-card");
 let preGameHostPlayerList  = $("#pre-game-host-player-list");
+var preGameHostRoleSelect = new Array(23);
+for(var i = 0; i < 23; i++){preGameHostRoleSelect[i] = false;}
 let preGameHostRoleList  = $("#pre-game-host-role-list");
+var preGameSelectedRolesCount = 0;
 let gamePlayerCounter = $(".game-player-counter");
 let gameRoleCounter = $(".game-role-counter");
 let gameStartBtn = $("#game-start-btn");
@@ -21,7 +22,9 @@ let gameState = {
   extra: {},
   lobbyName: "test",
   players: [],
-  maxPlayerCount: 5
+  maxPlayerCount: 5,
+  lobby_id: "",
+  player_id: ""
 };
 
 let roleNameList = [
@@ -328,6 +331,31 @@ let roleInstList = [
       kill each night, and lose if they die.`
   ]
 ];
+let stateIconMap = [
+  `<svg class="icon" id="i-heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M4 16 C1 12 2 6 7 4 12 2 15 6 16 8 17 6 21 2 26 4 31 6 31 12 28 16 25 20 16 28 16 28 16 28 7 20 4 16 Z" />
+  </svg>`,
+  `<svg  class="icon" id="i-alert" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M16 3 L30 29 2 29 Z M16 11 L16 19 M16 23 L16 25" />
+  </svg>`,
+  `<svg  class="icon" id="i-info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M16 14 L16 23 M16 8 L16 10" />
+    <circle cx="16" cy="16" r="14" />
+  </svg>`,
+  `<svg class="icon" id="i-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+    <path d="M22 11 C22 16 19 20 16 20 13 20 10 16 10 11 10 6 12 3 16 3 20 3 22 6 22 11 Z M4 30 L28 30 C28 21 22 20 16 20 10 20 4 21 4 30 Z" />
+  </svg>`
+];
+let stateStringMap = [
+  "- Alive -",
+  "- Dead - can vote -",
+  "- Dead - no vote -"
+];
+let stateColorMap = [
+  "green",
+  "yellow",
+  "red"
+];
 
 function handleError(error){
   console.log(error);
@@ -383,6 +411,30 @@ function renderRoleHostList(){
   });
 }
 
+function renderPlayerRef(){
+  playerRefCard.css("display","block");
+  $("#player-ref-card ul li").remove();
+  $.each(gameState.players, (index, player) => {
+    let stateIcon = stateIconMap[player.state];
+    if(gameState.player_id == player._id){
+      stateIcon = stateIconMap[3];
+    }
+    let stateString = stateStringMap[player.state];
+    let stateColor = stateColorMap[player.state];
+    $("#player-ref-card ul").append(`
+      <li class="list-group-item">
+        `+stateIcon+`
+        <span class="name-container">
+          `+player.name+`
+        </span>
+        <span class="state-container" style="color:`+stateColor+`;">
+          `+stateString+`
+        </span>
+      </li>
+    `);
+  });
+}
+
 function renderCharacterCard(roleIndex) {
   console.log("rendering character card with index: " + roleIndex);
   roleContainer.css("display", "inline-block");
@@ -403,9 +455,10 @@ function renderGameState(){
   if(isHost){
     gameStartText.text("");
     console.log(gameState);
-    //If host and game started
+    //If host and In-Game
     if(gameState.started){
       preGameHostCard.css("display", "none");
+      renderPlayerRef();
     }
     //if host and Pre-game
     else{
@@ -425,11 +478,12 @@ function renderGameState(){
   }
   //if normal player
   else{
-    //if player and game started
+    //if player and In-game
     if(gameState.started){
       gameStartText.text("");
       let roleIndex = gameState.role;
       if(roleIndex != 0){renderCharacterCard(roleIndex);}
+      renderPlayerRef();
     }
     //if player and Pre-game
     else{
@@ -441,6 +495,8 @@ function renderGameState(){
 
 function updateGameState(){
   console.log("updateing Game State");
+  gameState.player_id = params.player;
+  gameState.lobby_id = params.lobby;
   console.log(gameState);
   renderGameState();
 }
