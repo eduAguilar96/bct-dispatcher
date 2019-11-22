@@ -8,6 +8,7 @@ let app = express();
 let jsonParser = bodyParser.json();
 let { LobbyList } = require( "./models/lobby-model" );
 let { PlayerList } = require( "./models/player-model" );
+let { CommentList } = require( "./models/comment-model" );
 const { DATABASE_URL, PORT } = require( './config' );
 const ejs = require('ejs');
 
