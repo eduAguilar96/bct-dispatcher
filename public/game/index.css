@@ -27,6 +27,16 @@ body{
   margin-right: 5px;
 }
 
+.btn-kill {
+  padding: 0 2px;
+  margin-right: 5px;
+}
+
+.role-container{
+  float: right;
+  margin-right: 5px;
+}
+
 #role-inst-btn{
   width: 100%;
 }

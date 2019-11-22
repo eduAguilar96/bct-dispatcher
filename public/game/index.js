@@ -2,6 +2,7 @@ let params = [];
 let lobbyName = $("#lobby-name");
 let gameStartText = $("#game-start-text");
 let playerRefCard = $("#player-ref-card");
+let hostRefCard = $("#host-ref-card");
 let preGameHostCard = $("#pre-game-host-card");
 let preGameHostPlayerList  = $("#pre-game-host-player-list");
 var preGameHostRoleSelect = new Array(23);
@@ -435,6 +436,36 @@ function renderPlayerRef(){
   });
 }
 
+function renderHostRef(){
+  hostRefCard.css("display","block");
+  $("#host-ref-card ul li").remove();
+  $.each(gameState.players, (index, player) => {
+    let stateIcon = stateIconMap[player.state];
+    let stateString = stateStringMap[player.state];
+    let stateColor = stateColorMap[player.state];
+    $("#host-ref-card ul").append(`
+      <li class="list-group-item">
+        <button class="btn btn-secondary btn-kill" type="button" data-toggle="collapse" data-target="#role-`+index+`" aria-expanded="false" aria-controls="role-role-`+index+`">
+          <svg id="i-activity" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="25" height="25" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M4 16 L11 16 14 29 18 3 21 16 28 16" />
+          </svg>
+        </button>
+        `+stateIcon+`
+        <span class="name-container">
+          `+player.name+`
+        </span>
+        <span class="state-container" style="color:`+stateColor+`;">
+          `+stateString+`
+        </span>
+        <span class="role-container">
+          `+roleNameList[player.role]+`
+          <img src="../../images/`+player.role+`.png" width="25" height="25" />
+        </span>
+      </li>
+    `);
+  });
+}
+
 function renderCharacterCard(roleIndex) {
   console.log("rendering character card with index: " + roleIndex);
   roleContainer.css("display", "inline-block");
@@ -458,7 +489,7 @@ function renderGameState(){
     //If host and In-Game
     if(gameState.started){
       preGameHostCard.css("display", "none");
-      renderPlayerRef();
+      renderHostRef();
     }
     //if host and Pre-game
     else{
