@@ -41,6 +41,9 @@ function lobbyLi(lobby){
       </svg>
       `+lobby.playerCount+`/`+lobby.maxPlayerCount+`
     </span>
+    <span class="label-game-started">
+      `+((lobby.started) ? "- Game Started -" : "")+`
+    </span>
     <span id="name-container">`+lobby.name+`</span>
   </li>
   `

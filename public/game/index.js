@@ -1,6 +1,15 @@
+let params = [];
+var preGameHostRoleSelect = new Array(23);
+for(var i = 0; i < 23; i++){preGameHostRoleSelect[i] = false;}
+var preGameSelectedRolesCount = 0;
 let lobbyName = $("#lobby-name");
 let gameStartText = $("#game-start-text");
-let params = [];
+let preGameHostCard = $("#pre-game-host-card");
+let preGameHostPlayerList  = $("#pre-game-host-player-list");
+let preGameHostRoleList  = $("#pre-game-host-role-list");
+let gamePlayerCounter = $(".game-player-counter");
+let gameRoleCounter = $(".game-role-counter");
+let gameStartBtn = $("#game-start-btn");
 let roleContainer = $("#role-container");
 let roleName = $("#role-name");
 let roleDesc = $("#role-desc");
@@ -10,7 +19,9 @@ let gameState = {
   role: "unassigned",
   started: false,
   extra: {},
-  lobbyName: "test"
+  lobbyName: "test",
+  players: [],
+  maxPlayerCount: 5
 };
 
 let roleNameList = [
@@ -356,6 +367,22 @@ function renderRoleReference(){
   });
 }
 
+function renderRoleHostList(){
+  $("#pre-game-host-role-list li").remove();
+  $.each(roleNameList, (index, name) => {
+    if(index == 0 ){ return; }
+    $("#pre-game-host-role-list").append(`
+      <li class="list-group-item">
+        <input class="form-check-input" type="checkbox" value="`+index+`" id="role-checkbox-`+index+`">
+        <img src="../../images/`+index+`.png" width="25" height="25" />
+        <label class="form-check-label" for="role-checkbox-`+index+`">
+          `+name+`
+        </label>
+      </li>
+    `);
+  });
+}
+
 function renderCharacterCard(roleIndex) {
   console.log("rendering character card with index: " + roleIndex);
   roleContainer.css("display", "inline-block");
@@ -370,13 +397,45 @@ function renderCharacterCard(roleIndex) {
 function renderGameState(){
   console.log("rendering Game State");
   lobbyName.text("Lobby: "+gameState.lobbyName);
-  if(gameState.started){
+  gamePlayerCounter.text(gameState.players.length+"/"+gameState.maxPlayerCount);
+  let isHost = params.player == 0;
+  //If player is host
+  if(isHost){
     gameStartText.text("");
-    let roleIndex = 15;
-    if(roleIndex != 0){renderCharacterCard(roleIndex);}
+    console.log(gameState);
+    //If host and game started
+    if(gameState.started){
+      preGameHostCard.css("display", "none");
+    }
+    //if host and Pre-game
+    else{
+      preGameHostCard.css("display", "block");
+      //render player list
+      $.each(gameState.players, (index, player) => {
+        $(preGameHostPlayerList).append(`
+          <li class="list-group-item">`
+            +(index+1)+`: `+player.name+
+          `</li>
+        `);
+      });
+      //render role list
+      gameRoleCounter.text(preGameSelectedRolesCount+"/"+gameState.players.length);
+      renderRoleHostList();
+    }
   }
+  //if normal player
   else{
-    gameStartText.text("Waiting for Game to start...");
+    //if player and game started
+    if(gameState.started){
+      gameStartText.text("");
+      let roleIndex = 15;
+      if(roleIndex != 0){renderCharacterCard(roleIndex);}
+    }
+    //if player and Pre-game
+    else{
+      gameStartText.text("Waiting for Game to start...");
+
+    }
   }
 }
 
@@ -407,6 +466,36 @@ function getGameState(){
     }
   });
 }
+
+gameStartBtn.on('click', event =>{
+  console.log("click");
+  let lobby = {
+    lobby_id: params.lobby,
+    available_roles: preGameHostRoleSelect,
+    roles_count: preGameSelectedRolesCount
+  }
+  $.ajax({
+    url: "/gameStart",
+    method: "POST",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: JSON.stringify(lobby),
+    success: (result) => {
+      getGameState();
+    },
+    error: (error) => {
+      handleError(error);
+    }
+  });
+});
+
+$("#pre-game-host-role-list").on("change", "li input[type='checkbox']", event => {
+  let val = $(event.target).val();
+  console.log(val);
+  preGameHostRoleSelect[val] = !preGameHostRoleSelect[val];
+  (preGameHostRoleSelect[val]) ? preGameSelectedRolesCount++ : preGameSelectedRolesCount--;
+  gameRoleCounter.text(preGameSelectedRolesCount+"/"+gameState.players.length);
+});
 
 params = getUrlVars();
 renderRoleReference();

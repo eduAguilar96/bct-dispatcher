@@ -24,13 +24,60 @@
       </div>
     </nav>
     <div class="content-center">
+      <!-- Title card -->
       <div class="card">
         <div class="card-body">
           <h3 class="card-title" id="lobby-name">pene</h3>
           <h1  class="card-text" id="game-start-text"></h1>
+          <span class="player-counter">
+            <svg id="i-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M22 11 C22 16 19 20 16 20 13 20 10 16 10 11 10 6 12 3 16 3 20 3 22 6 22 11 Z M4 30 L28 30 C28 21 22 20 16 20 10 20 4 21 4 30 Z" />
+            </svg>
+          <span class="game-player-counter">0/5</span>
         </div>
       </div>
 
+      <!-- Pre Game Host Card -->
+      <div id="pre-game-host-card" class="card" style="display: none;">
+        <div class="card-body">
+          <h1 class="card-title">You are the storyteller</h1>
+          <h3 class="card-text">
+            <span class="player-counter">
+              <svg id="i-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <path d="M22 11 C22 16 19 20 16 20 13 20 10 16 10 11 10 6 12 3 16 3 20 3 22 6 22 11 Z M4 30 L28 30 C28 21 22 20 16 20 10 20 4 21 4 30 Z" />
+              </svg>
+              <span class="game-player-counter">0/5</span>
+            </span>
+            Player list
+          </h3>
+          <ul id="pre-game-host-player-list" class="list-group list-group-flush">
+          </ul>
+          </br>
+          <h3 class="card-text">
+            <span class="player-counter">
+              <svg id="i-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <path d="M22 11 C22 16 19 20 16 20 13 20 10 16 10 11 10 6 12 3 16 3 20 3 22 6 22 11 Z M4 30 L28 30 C28 21 22 20 16 20 10 20 4 21 4 30 Z" />
+              </svg>
+              <span class="game-role-counter">0/5</span>
+            </span>
+            Role Select
+          </h3>
+          <ul id="pre-game-host-role-list" class="list-group list-group-flush">
+            <li class="list-group-item">
+              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+              <img src="../../images/1.png" width="25" height="25" />
+              <label class="form-check-label" for="defaultCheck1">
+                Default checkbox
+              </label>
+            </li>
+          </ul>
+        </div>
+        <button id="game-start-btn" class="btn btn-primary" type="button" name="button">
+          Start Game
+        </button>
+      </div>
+
+      <!-- Current Role Card -->
       <div id="role-container" class="card" style="display: none;">
         <img id="role-img" class="card-img-top" src="../../images/1.png"/>
         <div class="card-body">
@@ -46,6 +93,7 @@
         </div>
       </div>
 
+      <!-- All role Refernce list  -->
       <div id="role-list-card" class="card">
         <button id="role-list-btn" class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#role-list-container" aria-expanded="false" aria-controls="role-list-container">
           All Roles

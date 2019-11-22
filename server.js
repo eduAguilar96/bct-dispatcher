@@ -46,7 +46,7 @@ app.get('/game', (req, res) => {
   });
 });
 
-//Gets
+//Get all lobbies
 app.get('/lobby', (req, res) => {
   console.log("getting all lobbies");
   LobbyList.getAll().then(lobbies => {
@@ -57,21 +57,53 @@ app.get('/lobby', (req, res) => {
   });
 });
 
+//start game
+app.post('/gameStart', (req, res) => {
+  let lobby_id = req.body.lobby_id;
+  let available_roles = req.body.available_roles;
+  LobbyList.start(lobby_id)
+  .then(lobby => {
+    return res.status(200).json(lobby);
+  }).catch(error => {
+    databaseError(res, error);
+  });
+});
+
+//get game state
 app.post('/gameState', (req, res) => {
   let player_id = req.body.player_id;
   let lobby_id = req.body.lobby_id;
   LobbyList.getOne(lobby_id)
   .then(lobby => {
     if(lobby != null){
-      let gameStarted = lobby.started;
-      return res.status(200).json({
-        code: 200,
-        message: "Game state",
-        role: "unassigned",
-        started: gameStarted,
-        extra: {},
-        lobbyName: lobby.name
+      // if(player_id == 0){
+      PlayerList.getLobbyPlayers(lobby_id)
+      .then(players => {
+        return res.status(200).json({
+          code: 200,
+          message: "Game state",
+          role: "unassigned",
+          started: lobby.started,
+          extra: {},
+          lobbyName: lobby.name,
+          players: players,
+          maxPlayerCount: lobby.maxPlayerCount
+        });
+      })
+      .catch(error => {
+        databaseError(error);
       });
+      // }
+      // else{
+      //   return res.status(200).json({
+      //     code: 200,
+      //     message: "Game state",
+      //     role: "unassigned",
+      //     started: lobby.started,
+      //     extra: {},
+      //     lobbyName: lobby.name
+      //   });
+      // }
     }
     else{
       return res.status(404).json({
@@ -85,7 +117,7 @@ app.post('/gameState', (req, res) => {
   });
 });
 
-//post
+//Create new lobby
 app.post("/lobby", (req, res) => {
   console.log("creating lobby");
   let hostName = req.body.hostName;
@@ -115,6 +147,7 @@ app.post("/lobby", (req, res) => {
   });
 });
 
+//Log in player to lobby
 app.post("/player", (req, res) => {
   let password = req.body.password;
   let name = req.body.username;
@@ -127,7 +160,7 @@ app.post("/player", (req, res) => {
     if(!emptyLobbyResult){
       //if password is ok
       if(lobby.password == password){
-        //check if user in room
+        //check if user is Host
         let playerIsHost = lobby.hostName == name;
         if(playerIsHost){
           return res.status(200).json({
@@ -137,6 +170,7 @@ app.post("/player", (req, res) => {
             player_id: "0"
           });
         }
+        //check if user is in room
         else{
           PlayerList.getOneLobby(name, lobby_id)
           .then(player => {
@@ -151,33 +185,44 @@ app.post("/player", (req, res) => {
             }
             //there is space in lobby
             else if(emptyPlayerResult){
-              let newPlayer = {
-                name: name,
-                lobby_id: mongoose.Types.ObjectId(lobby_id)
+              //check if game has started
+              if(lobby.started){
+                console.log("Game has already started");
+                return res.status(400).json({
+                  code: 400,
+                  message: "Ya empezo el juego bruh"
+                });
               }
-              PlayerList.post(newPlayer)
-              .then(player => {
-                //if player not created
-                if(Object.entries(player).length === 0){
-                  return res.status(400).json({
-                    code: 400,
-                    message: "La regaste con algo bruh"
-                  });
+              //game has'nt started
+              else{
+                let newPlayer = {
+                  name: name,
+                  lobby_id: mongoose.Types.ObjectId(lobby_id)
                 }
-                else{
-                  LobbyList.putPlayerCount(lobby_id, 1).then(() =>{
-                    return res.status(200).json({
-                      code: 200,
-                      message: "Room in lobby, creating player",
-                      lobby_id: lobby_id,
-                      player_id: player._id
+                PlayerList.post(newPlayer)
+                .then(player => {
+                  //if player not created
+                  if(Object.entries(player).length === 0){
+                    return res.status(400).json({
+                      code: 400,
+                      message: "La regaste con algo bruh"
                     });
-                  });
-                }
-              })
-              .catch(error => {
-                databaseError(res, error);
-              });
+                  }
+                  else{
+                    LobbyList.putPlayerCount(lobby_id, 1).then(() =>{
+                      return res.status(200).json({
+                        code: 200,
+                        message: "Room in lobby, creating player",
+                        lobby_id: lobby_id,
+                        player_id: player._id
+                      });
+                    });
+                  }
+                })
+                .catch(error => {
+                  databaseError(res, error);
+                });
+              }
             }
             //player already in room, login
             else{
