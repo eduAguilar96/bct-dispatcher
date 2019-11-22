@@ -88,7 +88,7 @@ let LobbyList = {
   start : function(lobby_id){
     return Lobby.update(
       {"_id": mongoose.Types.ObjectId(lobby_id)},
-      {started: true}
+      {$set: {started: true}}
     ).then(result => {
       return result;
     })

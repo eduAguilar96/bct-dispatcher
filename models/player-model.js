@@ -93,6 +93,21 @@ let PlayerList = {
       .catch(error => {
         return Error(error);
       });
+  },
+
+  setRole : function(player, roleIndex){
+    console.log("inside model");
+    return Player.update(
+      {"_id": mongoose.Types.ObjectId(player._id)},
+      {$set: {"role": roleIndex}}
+    ).then(result => {
+      console.log("model gucci");
+      return result;
+    })
+    .catch(error => {
+      console.log("model error");
+      return Error(error);
+    });
   }
 }
 

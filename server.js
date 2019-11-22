@@ -61,10 +61,44 @@ app.get('/lobby', (req, res) => {
 app.post('/gameStart', (req, res) => {
   let lobby_id = req.body.lobby_id;
   let available_roles = req.body.available_roles;
-  LobbyList.start(lobby_id)
+  let roles_count = req.body.roles_count;
+  //check number of players/roles
+  LobbyList.getOne(lobby_id)
   .then(lobby => {
-    return res.status(200).json(lobby);
-  }).catch(error => {
+    if(lobby.playerCount == roles_count){
+      LobbyList.start(lobby_id)
+      .then(lobby => {
+        //shuffle roles
+        let rolesStack = []
+        for(var i = 1; i < available_roles.length; i++){
+          if(available_roles[i]){
+            rolesStack.push(i);
+          }
+        }
+        rolesStack = shuffle(rolesStack);
+        PlayerList.getLobbyPlayers(lobby_id)
+        .then(players => {
+          for(var i = 0; i < players.length; i++){
+            let roleIndex = rolesStack.pop();
+            PlayerList.setRole(players[i], roleIndex);
+          }
+          return res.status(200).json(players);
+        })
+        .catch(error => {
+          databaseError(res, error);
+        });
+
+      }).catch(error => {
+        databaseError(res, error);
+      });
+    }else{
+      return res.status(400).json({
+        code: 400,
+        message: "Roles to Player ratio aint gucci"
+      })
+    }
+  })
+  .catch(error => {
     databaseError(res, error);
   });
 });
@@ -76,13 +110,13 @@ app.post('/gameState', (req, res) => {
   LobbyList.getOne(lobby_id)
   .then(lobby => {
     if(lobby != null){
-      // if(player_id == 0){
       PlayerList.getLobbyPlayers(lobby_id)
       .then(players => {
+        let playerRole = (players.find(e => e._id == player_id)).role;
         return res.status(200).json({
           code: 200,
           message: "Game state",
-          role: "unassigned",
+          role: playerRole,
           started: lobby.started,
           extra: {},
           lobbyName: lobby.name,
@@ -91,19 +125,8 @@ app.post('/gameState', (req, res) => {
         });
       })
       .catch(error => {
-        databaseError(error);
+        databaseError(res, error);
       });
-      // }
-      // else{
-      //   return res.status(200).json({
-      //     code: 200,
-      //     message: "Game state",
-      //     role: "unassigned",
-      //     started: lobby.started,
-      //     extra: {},
-      //     lobbyName: lobby.name
-      //   });
-      // }
     }
     else{
       return res.status(404).json({
@@ -113,7 +136,7 @@ app.post('/gameState', (req, res) => {
     }
   })
   .catch(error => {
-    databaseError(error);
+    databaseError(res, error);
   });
 });
 
@@ -302,5 +325,10 @@ runServer( PORT, DATABASE_URL )
 	.catch( err => {
 		console.log( err );
 	});
+
+function shuffle(array) {
+  console.log("Inside shuffle");
+  return array.sort(() => Math.random() - 0.5);
+}
 
 module.exports = { app, runServer, closeServer };

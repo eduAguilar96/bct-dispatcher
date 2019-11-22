@@ -428,7 +428,7 @@ function renderGameState(){
     //if player and game started
     if(gameState.started){
       gameStartText.text("");
-      let roleIndex = 15;
+      let roleIndex = gameState.role;
       if(roleIndex != 0){renderCharacterCard(roleIndex);}
     }
     //if player and Pre-game
