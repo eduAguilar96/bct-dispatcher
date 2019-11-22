@@ -103,16 +103,27 @@ let PlayerList = {
   },
 
   setRole : function(player, roleIndex){
-    console.log("inside model");
     return Player.update(
       {"_id": mongoose.Types.ObjectId(player._id)},
       {$set: {"role": roleIndex}}
     ).then(result => {
-      console.log("model gucci");
       return result;
     })
     .catch(error => {
-      console.log("model error");
+      return Error(error);
+    });
+  },
+
+  kill : function(lobby_id, player_name, new_state){
+    return Player.update(
+      {
+        name: player_name,
+        lobby_id: mongoose.Types.ObjectId(lobby_id)
+      },{$set: {"state": new_state}}
+    ).then(result => {
+      return result;
+    })
+    .catch(error => {
       return Error(error);
     });
   }

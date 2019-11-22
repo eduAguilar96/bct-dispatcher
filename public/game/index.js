@@ -354,7 +354,7 @@ let stateStringMap = [
 ];
 let stateColorMap = [
   "green",
-  "yellow",
+  "blue",
   "red"
 ];
 
@@ -445,15 +445,13 @@ function renderHostRef(){
     let stateColor = stateColorMap[player.state];
     $("#host-ref-card ul").append(`
       <li class="list-group-item">
-        <button class="btn btn-secondary btn-kill" type="button" data-toggle="collapse" data-target="#role-`+index+`" aria-expanded="false" aria-controls="role-role-`+index+`">
+        <button class="btn btn-secondary btn-kill" type="button">
           <svg id="i-activity" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="25" height="25" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
               <path d="M4 16 L11 16 14 29 18 3 21 16 28 16" />
           </svg>
         </button>
         `+stateIcon+`
-        <span class="name-container">
-          `+player.name+`
-        </span>
+        <span class="name-container">`+player.name+`</span>
         <span class="state-container" style="color:`+stateColor+`;">
           `+stateString+`
         </span>
@@ -582,6 +580,33 @@ $("#pre-game-host-role-list").on("change", "li input[type='checkbox']", event =>
   preGameHostRoleSelect[val] = !preGameHostRoleSelect[val];
   (preGameHostRoleSelect[val]) ? preGameSelectedRolesCount++ : preGameSelectedRolesCount--;
   gameRoleCounter.text(preGameSelectedRolesCount+"/"+gameState.players.length);
+});
+
+$("#host-ref-card").on("click", "ul li .btn-kill", event => {
+  console.log("click");
+  console.log($(event.currentTarget));
+  let playerName = $(event.currentTarget).parent().children(".name-container").text();
+  console.log("\'"+playerName+"\'");
+  let current_state = (gameState.players.find(e => e.name == playerName)).state;
+  let body = {
+    player_name: playerName,
+    lobby_id: gameState.lobby_id,
+    current_state: current_state
+  }
+  $.ajax({
+    url: "/playerKill",
+    method: "POST",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: JSON.stringify(body),
+    success: (result) => {
+      console.log(result);
+      getGameState();
+    },
+    error: (error) => {
+      handleError(error);
+    }
+  });
 });
 
 params = getUrlVars();

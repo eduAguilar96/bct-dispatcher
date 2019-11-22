@@ -288,6 +288,20 @@ app.post("/player", (req, res) => {
   });
 });
 
+//Kill player in lobby
+app.post("/playerKill", (req, res) => {
+  let lobby_id = req.body.lobby_id;
+  let player_name = req.body.player_name;
+  let current_state = req.body.current_state;
+  let new_state = (current_state+1)%3;
+  PlayerList.kill(lobby_id, player_name, new_state)
+  .then(player => {
+    return res.status(200).json(player);
+  }).catch(error => {
+    databaseError(res, error);
+  });
+});
+
 let server;
 
 function runServer(port, databaseUrl){
