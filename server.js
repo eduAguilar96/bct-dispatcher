@@ -112,7 +112,13 @@ app.post('/gameState', (req, res) => {
     if(lobby != null){
       PlayerList.getLobbyPlayers(lobby_id)
       .then(players => {
-        let playerRole = (players.find(e => e._id == player_id)).role;
+        let player = players.find(e => {
+          let a = e._id;
+          let b = player_id;
+          return  a == b;
+        });
+        let playerRole = (player == null) ? 15 : player.role;
+        console.log("playerRole: \'"+playerRole+"\'");
         return res.status(200).json({
           code: 200,
           message: "Game state",
