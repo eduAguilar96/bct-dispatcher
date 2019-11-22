@@ -51,3 +51,12 @@ body{
 .label-game-started{
   color: red;
 }
+
+.lobby-details{
+  margin-top: 10px;
+}
+.btn-lobby-details{
+  height: 31px;
+  width: 31px;
+  padding: 0;
+}
