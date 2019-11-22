@@ -12,7 +12,7 @@ var preGameSelectedRolesCount = 0;
 let gamePlayerCounter = $(".game-player-counter");
 let gameRoleCounter = $(".game-role-counter");
 let gameStartBtn = $("#game-start-btn");
-let roleContainer = $("#role-container");
+let roleCard = $("#role-card");
 let roleName = $("#role-name");
 let roleDesc = $("#role-desc");
 let roleInst = $("#role-inst");
@@ -466,7 +466,7 @@ function renderHostRef(){
 
 function renderCharacterCard(roleIndex) {
   console.log("rendering character card with index: " + roleIndex);
-  roleContainer.css("display", "inline-block");
+  roleCard.css("display", "block");
   roleName.text(roleNameList[roleIndex]);
   roleImg.attr("src","../../images/"+roleIndex+".png");
   roleDesc.text(roleDescList[roleIndex]);
