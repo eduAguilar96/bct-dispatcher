@@ -10,7 +10,11 @@ body{
   width: 100%;
 }
 
-#lobby-list-container {
+#fav-list-container {
+  margin-bottom: 10px;
+}
+
+.list-container {
   margin: 0px 20px;
 }
 

@@ -1,5 +1,6 @@
 let express = require( "express" );
-var path = require('path');
+let path = require('path');
+let cookieParser = require('cookie-parser');
 let morgan = require( "morgan" );
 let mongoose = require( "mongoose" );
 let bodyParser = require( "body-parser" );
@@ -11,10 +12,9 @@ const { DATABASE_URL, PORT } = require( './config' );
 const ejs = require('ejs');
 
 mongoose.Promise = global.Promise;
-
-// app.set('view engine', 'ejs')
 app.use(express.static("public"));
 app.use(morgan( "dev" ));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.set ("view engine", "ejs");
@@ -175,6 +175,28 @@ app.post("/lobby", (req, res) => {
     databaseError(res, error);
   });
 });
+
+//Favorite Lobby
+app.post("/lobbyFav", (req, res) => {
+  console.log("trying to fav");
+  let current_favs = req.cookies.fav_names;
+  current_favs = Array.isArray(current_favs) ? current_favs : [];
+  let lobby_name = req.body.lobby_name;
+  let index = current_favs.indexOf(lobby_name);
+  if(index == -1){
+    current_favs.push(lobby_name);
+  }
+  else{
+    current_favs.splice(index, 1);
+  }
+  console.log(lobby_name);
+  console.log(current_favs);
+  res.cookie("fav_names", current_favs);
+  return res.status(200).json({
+    code: 200,
+    message: "Cookies updated",
+  });
+})
 
 //Log in player to lobby
 app.post("/player", (req, res) => {

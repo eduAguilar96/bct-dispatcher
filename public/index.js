@@ -6,8 +6,9 @@ let joinLobbyUsername = $("#join-lobby-username");
 let joinLobbyPassword = $("#join-lobby-password");
 let btnCreate = $("#btn-create");
 let btnJoin = $("#btn-join-lobby-modal");
-let listContainer = $("#lobby-list-container");
+let listContainer = $(".list-container");
 
+var fav_names = "j:[]";
 var global_list = [{
   name: "test"
 }];
@@ -23,6 +24,7 @@ function handleError(error){
 }
 
 function lobbyLi(lobby){
+  let hearFill = (lobby.fav) ? "red" : "none";
   let li = `
   <li class="list-group-item list-group">
     <div class="btn-group action-btn-container" role="group" aria-label="Buttons">
@@ -30,7 +32,7 @@ function lobbyLi(lobby){
         Join
       </button>
       <button class="btn btn-outline-primary btn-sm" id="btn-heart">
-        <svg id="i-heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="21" height="21" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <svg id="i-heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="21" height="21" fill="`+hearFill+`" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
           <path d="M4 16 C1 12 2 6 7 4 12 2 15 6 16 8 17 6 21 2 26 4 31 6 31 12 28 16 25 20 16 28 16 28 16 28 7 20 4 16 Z" />
         </svg>
       </button>
@@ -52,13 +54,24 @@ function lobbyLi(lobby){
 
 function update_list() {
   $('#lobby-list-container ul li').remove();
-  console.log(global_list);
+  $('#fav-list-container ul li').remove();
   global_list.sort((a,b) => {
     return new Date(b.updated) - new Date(a.updated);
   });
-  console.log(global_list);
+  // fav_names = Array.isArray(fav_names) ? fav_names : [];
+
+  fav_names = (Cookies.get("fav_names") == undefined) ? fav_names : Cookies.get("fav_names");
+  fav_names = fav_names.replace('j:','');
+  fav_names = JSON.parse(fav_names);
   $.each(global_list, (index, lobby) => {
-    $('#lobby-list-container ul').append(lobbyLi(lobby));
+    if(fav_names.includes(lobby.name)){
+      lobby.fav = true;
+      $('#fav-list-container ul').append(lobbyLi(lobby));
+    }
+    else{
+      lobby.fav = false;
+      $('#lobby-list-container ul').append(lobbyLi(lobby));
+    }
   });
 }
 
@@ -68,7 +81,6 @@ function get_list() {
     method: "GET",
     dataType: "JSON",
     success: (result) => {
-      console.log(result);
       global_list = result;
       update_list();
     },
@@ -79,8 +91,6 @@ function get_list() {
 }
 
 function gotoGame(result){
-  console.log("result");
-  console.log(result);
   let lobby_id = result.lobby_id;
   let player_id = result.player_id;
   window.location.assign("/game/?lobby="+lobby_id+"&player="+player_id);
@@ -122,6 +132,24 @@ listContainer.on("click", "ul li #btn-join", event => {
   currentLobbyName = lobbyName;
   $('#join-lobby-modal-name').text(lobbyName);
   $('#join-lobby-modal').modal('toggle');
+});
+
+listContainer.on("click", "ul li #btn-heart", event => {
+  event.preventDefault();
+  let lobbyName = $(event.currentTarget).parent().parent().children("#name-container").text();
+  $.ajax({
+    url: "/lobbyFav",
+    method: "POST",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: JSON.stringify({lobby_name: lobbyName}),
+    success: (result) => {
+      get_list();
+    },
+    error: (error) => {
+      handleError(error);
+    }
+  });
 });
 
 btnJoin.on("click", event => {
