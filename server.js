@@ -71,6 +71,22 @@ app.post('/comment', (req, res) => {
   });
 })
 
+//Post comment
+app.post('/commentNew', (req, res) => {
+  let comment = {
+    player_name: req.body.player_name,
+    lobby_id: req.body.lobby_id,
+    desc: req.body.comment
+  }
+  CommentList.post(comment)
+  .then(result => {
+    return res.status(200).json(result);
+  })
+  .catch(error => {
+    databaseError(res, error);
+  });
+})
+
 //start game
 app.post('/gameStart', (req, res) => {
   let lobby_id = req.body.lobby_id;

@@ -19,6 +19,10 @@ var CommentSchema = new mongoose.Schema({
   desc: {
     type: String,
     required: true
+  },
+  created:{
+    type: Date,
+    default: Date.now
   }
 });
 
@@ -43,6 +47,16 @@ let CommentList = {
       })
       .catch(error => {
         throw Error(error);
+      });
+  },
+
+  post : function(newComment){
+    return Comment.create(newComment)
+      .then(result => {
+        return result;
+      })
+      .catch(error => {
+        return Error(error);
       });
   },
 }

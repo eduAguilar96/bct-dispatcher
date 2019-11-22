@@ -78,3 +78,18 @@ body{
 .icon{
   margin-right: 10px;
 }
+
+.float{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#comment-field{
+  display: inline-block;
+  width: 400px;
+}
+#comment-btn{
+  float:right;
+  display: inline-block;
+  width: 85px;
+}

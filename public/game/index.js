@@ -17,6 +17,8 @@ let roleName = $("#role-name");
 let roleDesc = $("#role-desc");
 let roleInst = $("#role-inst");
 let roleImg = $("#role-img");
+let commentBtn = $("#comment-btn");
+let commentField = $("#comment-field");
 let gameState = {
   role: "unassigned",
   started: false,
@@ -573,6 +575,37 @@ gameStartBtn.on('click', event =>{
     }
   });
 });
+
+commentBtn.on('click', event => {
+  let comment = commentField.val();
+  console.log(comment);
+  let player_id = gameState.player_id;
+  // conso
+  let player = (gameState.players.find(e => e._id == player_id));
+  console.log(player);
+  let player_name = (player == undefined) ? "Host" : player.name;
+  let lobby_id = gameState.lobby_id;
+  let body = {
+    comment: comment,
+    player_name: player_name,
+    player_id: player_id,
+    lobby_id: lobby_id
+  }
+  $.ajax({
+    url: "/commentNew",
+    method: "POST",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: JSON.stringify(body),
+    success: (result) => {
+      console.log(result);
+      getGameState();
+    },
+    error: (error) => {
+      handleError(error);
+    }
+  });
+})
 
 $("#pre-game-host-role-list").on("change", "li input[type='checkbox']", event => {
   let val = $(event.target).val();
