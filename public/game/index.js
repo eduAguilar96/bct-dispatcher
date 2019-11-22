@@ -465,7 +465,7 @@ function renderHostRef(){
 }
 
 function renderCharacterCard(roleIndex) {
-  console.log("rendering character card with index: " + roleIndex);
+  // console.log("rendering character card with index: " + roleIndex);
   roleCard.css("display", "block");
   roleName.text(roleNameList[roleIndex]);
   roleImg.attr("src","../../images/"+roleIndex+".png");
@@ -476,14 +476,14 @@ function renderCharacterCard(roleIndex) {
 }
 
 function renderGameState(){
-  console.log("rendering Game State");
+  // console.log("rendering Game State");
   lobbyName.text("Lobby: "+gameState.lobbyName);
   gamePlayerCounter.text(gameState.players.length+"/"+gameState.maxPlayerCount);
   let isHost = params.player == 0;
   //If player is host
   if(isHost){
     gameStartText.text("");
-    console.log(gameState);
+    // console.log(gameState);
     //If host and In-Game
     if(gameState.started){
       preGameHostCard.css("display", "none");
@@ -523,15 +523,15 @@ function renderGameState(){
 }
 
 function updateGameState(){
-  console.log("updateing Game State");
+  // console.log("updateing Game State");
   gameState.player_id = params.player;
   gameState.lobby_id = params.lobby;
-  console.log(gameState);
+  // console.log(gameState);
   renderGameState();
 }
 
 function getGameState(){
-  console.log("getting Game State");
+  // console.log("getting Game State");
   let game = {
     lobby_id: params.lobby,
     player_id: params.player
@@ -553,7 +553,7 @@ function getGameState(){
 }
 
 gameStartBtn.on('click', event =>{
-  console.log("click");
+  // console.log("click");
   let lobby = {
     lobby_id: params.lobby,
     available_roles: preGameHostRoleSelect,
@@ -576,17 +576,17 @@ gameStartBtn.on('click', event =>{
 
 $("#pre-game-host-role-list").on("change", "li input[type='checkbox']", event => {
   let val = $(event.target).val();
-  console.log(val);
+  // console.log(val);
   preGameHostRoleSelect[val] = !preGameHostRoleSelect[val];
   (preGameHostRoleSelect[val]) ? preGameSelectedRolesCount++ : preGameSelectedRolesCount--;
   gameRoleCounter.text(preGameSelectedRolesCount+"/"+gameState.players.length);
 });
 
 $("#host-ref-card").on("click", "ul li .btn-kill", event => {
-  console.log("click");
-  console.log($(event.currentTarget));
+  // console.log("click");
+  // console.log($(event.currentTarget));
   let playerName = $(event.currentTarget).parent().children(".name-container").text();
-  console.log("\'"+playerName+"\'");
+  // console.log("\'"+playerName+"\'");
   let current_state = (gameState.players.find(e => e.name == playerName)).state;
   let body = {
     player_name: playerName,
@@ -600,7 +600,7 @@ $("#host-ref-card").on("click", "ul li .btn-kill", event => {
     contentType: "application/json",
     data: JSON.stringify(body),
     success: (result) => {
-      console.log(result);
+      // console.log(result);
       getGameState();
     },
     error: (error) => {
