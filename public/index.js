@@ -52,9 +52,7 @@ function lobbyLi(lobby){
     <span id="name-container">`+lobby.name+`</span>
     <div id=lobby-`+lobby.name+` class="collapse">
       <div class="lobby-details">
-        <ul class="list-group">
-          <li class="list-group list-group-item">Name: Comment</li>
-          <li class="list-group list-group-item">Name: Comment</li>
+        <ul id="comment-ul" class="list-group">
         </ul>
       </div>
     </div>
@@ -106,6 +104,21 @@ function gotoGame(result){
   let lobby_id = result.lobby_id;
   let player_id = result.player_id;
   window.location.assign("/game/?lobby="+lobby_id+"&player="+player_id);
+}
+
+function renderCommentSection(comments, event){
+  let ul = $(event.currentTarget).parent().find("#comment-ul");
+  ul.children().remove();
+  comments.sort((a,b) => {
+    return new Date(b.created) - new Date(a.created);
+  });
+  $.each(comments, (index, comment) => {
+    ul.append(`
+      <li class="list-group-item">
+        <b>`+comment.player_name+`:</b> `+comment.desc+`
+      </li>
+    `);
+  });
 }
 
 btnCreate.on("click", event => {
@@ -178,10 +191,11 @@ listContainer.on("click", "ul li #btn-open-comments", event => {
       contentType: "application/json",
       data: JSON.stringify({lobby: lobby_id}),
       success: (result) => {
-        var index = global_list.map(function(e) { return e.name; }).indexOf(lobbyName);
-        global_list[index].comments = result;
+        // var index = global_list.map(function(e) { return e.name; }).indexOf(lobbyName);
+        // global_list[index].comments = result;
         console.log(result);
         // update_list();
+        renderCommentSection(result, event);
       },
       error: (error) => {
         handleError(error);
