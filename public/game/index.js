@@ -361,7 +361,7 @@ let stateColorMap = [
 ];
 
 function handleError(error){
-  console.log(error);
+  // console.log(error);
   if(error.hasOwnProperty('responseJSON')){
     window.alert(error.responseJSON.code+" - "+error.responseJSON.message);
   }else{
@@ -496,11 +496,11 @@ function getCommentSection(){
     contentType: "application/json",
     data: JSON.stringify({lobby: gameState.lobby_id}),
     success: (result) => {
-      console.log(result);
+      // console.log(result);
       result.sort((a,b) => {
         return new Date(b.created) - new Date(a.created);
       });
-      console.log(result);
+      // console.log(result);
       renderCommentSection(result);
     },
     error: (error) => {
@@ -628,7 +628,7 @@ commentBtn.on('click', event => {
     contentType: "application/json",
     data: JSON.stringify(body),
     success: (result) => {
-      console.log(result);
+      // console.log(result);
       commentField.val("");
       getGameState();
     },

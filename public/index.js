@@ -15,7 +15,7 @@ var global_list = [{
 var currentLobbyName = "";
 
 function handleError(error){
-  console.log(error);
+  // console.log(error);
   if(error.hasOwnProperty('responseJSON')){
     window.alert(error.responseJSON.code+" - "+error.responseJSON.message);
   }else{
@@ -91,7 +91,7 @@ function get_list() {
     dataType: "JSON",
     success: (result) => {
       global_list = result;
-      console.log(global_list);
+      // console.log(global_list);
       update_list();
     },
     error: (error) => {
@@ -183,7 +183,7 @@ listContainer.on("click", "ul li #btn-open-comments", event => {
   let isExpanded = $(event.currentTarget).attr("aria-expanded") == "true";
   let lobby_id = global_list.find(e => e.name == lobbyName)._id;
   if(!isExpanded){
-    console.log("fetch comments");
+    // console.log("fetch comments");
     $.ajax({
       url: "/comment/?lobby="+lobbyName,
       method: "POST",
@@ -193,7 +193,7 @@ listContainer.on("click", "ul li #btn-open-comments", event => {
       success: (result) => {
         // var index = global_list.map(function(e) { return e.name; }).indexOf(lobbyName);
         // global_list[index].comments = result;
-        console.log(result);
+        // console.log(result);
         // update_list();
         renderCommentSection(result, event);
       },
