@@ -52,6 +52,11 @@ function lobbyLi(lobby){
 
 function update_list() {
   $('#lobby-list-container ul li').remove();
+  console.log(global_list);
+  global_list.sort((a,b) => {
+    return new Date(b.updated) - new Date(a.updated);
+  });
+  console.log(global_list);
   $.each(global_list, (index, lobby) => {
     $('#lobby-list-container ul').append(lobbyLi(lobby));
   });
