@@ -78,7 +78,7 @@ let LobbyList = {
       {"_id": mongoose.Types.ObjectId(lobby_id)},
       {
         $inc: {playerCount: increment},
-        $set: {updated: Date.now}
+        $set: { updated: new Date()}
       }
     ).then(result => {
       return result;
@@ -91,10 +91,7 @@ let LobbyList = {
   start : function(lobby_id){
     return Lobby.update(
       {"_id": mongoose.Types.ObjectId(lobby_id)},
-      {$set: {
-        started: true,
-        updated: Date.now
-      }}
+      {$set: { started: true, updated: new Date()}}
     ).then(result => {
       return result;
     })
