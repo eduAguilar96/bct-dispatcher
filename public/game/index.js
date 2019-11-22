@@ -477,11 +477,44 @@ function renderCharacterCard(roleIndex) {
   });
 }
 
+function renderCommentSection(comments) {
+  $("#comment-list li").remove();
+  $.each(comments, (index, comment) => {
+    $("#comment-list").append(`
+      <li class="list-group-item">
+        <b>`+comment.player_name+`:</b> `+comment.desc+`
+      </li>
+    `);
+  });
+}
+
+function getCommentSection(){
+  $.ajax({
+    url: "/comment",
+    method: "POST",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: JSON.stringify({lobby: gameState.lobby_id}),
+    success: (result) => {
+      console.log(result);
+      result.sort((a,b) => {
+        return new Date(b.created) - new Date(a.created);
+      });
+      console.log(result);
+      renderCommentSection(result);
+    },
+    error: (error) => {
+      handleError(error);
+    }
+  });
+}
+
 function renderGameState(){
   // console.log("rendering Game State");
   lobbyName.text("Lobby: "+gameState.lobbyName);
   gamePlayerCounter.text(gameState.players.length+"/"+gameState.maxPlayerCount);
   let isHost = params.player == 0;
+  getCommentSection();
   //If player is host
   if(isHost){
     gameStartText.text("");
@@ -578,11 +611,8 @@ gameStartBtn.on('click', event =>{
 
 commentBtn.on('click', event => {
   let comment = commentField.val();
-  console.log(comment);
   let player_id = gameState.player_id;
-  // conso
   let player = (gameState.players.find(e => e._id == player_id));
-  console.log(player);
   let player_name = (player == undefined) ? "Host" : player.name;
   let lobby_id = gameState.lobby_id;
   let body = {
@@ -599,6 +629,7 @@ commentBtn.on('click', event => {
     data: JSON.stringify(body),
     success: (result) => {
       console.log(result);
+      commentField.val("");
       getGameState();
     },
     error: (error) => {
