@@ -37,7 +37,7 @@ function lobbyLi(lobby){
         </svg>
       </button>
     </div>
-    <button class="btn btn-outline-secondary btn-lobby-details" type="button" data-toggle="collapse" data-target="#lobby-`+lobby.name+`" aria-expanded="false" aria-controls="lobby-`+lobby.name+`">
+    <button id="btn-open-comments" class="btn btn-outline-secondary btn-lobby-details" type="button" data-toggle="collapse" data-target="#lobby-`+lobby.name+`" aria-expanded="false" aria-controls="lobby-`+lobby.name+`">
       ...
     </button>
     <span class="player-counter">
@@ -93,6 +93,7 @@ function get_list() {
     dataType: "JSON",
     success: (result) => {
       global_list = result;
+      console.log(global_list);
       update_list();
     },
     error: (error) => {
@@ -161,6 +162,32 @@ listContainer.on("click", "ul li #btn-heart", event => {
       handleError(error);
     }
   });
+});
+
+listContainer.on("click", "ul li #btn-open-comments", event => {
+  event.preventDefault();
+  let lobbyName = $(event.currentTarget).parent().children("#name-container").text();
+  let isExpanded = $(event.currentTarget).attr("aria-expanded") == "true";
+  let lobby_id = global_list.find(e => e.name == lobbyName)._id;
+  if(!isExpanded){
+    console.log("fetch comments");
+    $.ajax({
+      url: "/comment/?lobby="+lobbyName,
+      method: "POST",
+      dataType: "JSON",
+      contentType: "application/json",
+      data: JSON.stringify({lobby: lobby_id}),
+      success: (result) => {
+        var index = global_list.map(function(e) { return e.name; }).indexOf(lobbyName);
+        global_list[index].comments = result;
+        console.log(result);
+        // update_list();
+      },
+      error: (error) => {
+        handleError(error);
+      }
+    });
+  }
 });
 
 btnJoin.on("click", event => {

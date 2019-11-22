@@ -58,6 +58,19 @@ app.get('/lobby', (req, res) => {
   });
 });
 
+//Get Lobby comments
+app.post('/comment', (req, res) => {
+  let lobby_id = req.body.lobby;
+  console.log(lobby_id);
+  CommentList.getAllLobby(lobby_id)
+  .then(comments => {
+    return res.status(200).json(comments);
+  })
+  .catch(error => {
+    databaseError(res, error);
+  });
+})
+
 //start game
 app.post('/gameStart', (req, res) => {
   let lobby_id = req.body.lobby_id;
